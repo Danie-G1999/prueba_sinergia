@@ -11,25 +11,25 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Credenciales incorrectas'], 401);
+        if (!$token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => auth('api')->factory()->getTTL() * 60
         ]);
-    }
-
-    public function me()
-    {
-        return response()->json(auth()->user());
     }
 
     public function logout()
     {
-        auth()->logout();
-        return response()->json(['message' => 'Logout exitoso']);
+        auth('api')->logout();
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function me()
+    {
+        return response()->json(auth('api')->user());
     }
 }
