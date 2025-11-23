@@ -1,7 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PacienteController;
 
-Route::get('/login', function(){ return view('auth.login'); });
-Route::get('/dashboard', function(){ return view('dashboard'); });
+// Login view
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login');
 
+// Dashboard view con datos
+Route::get('/dashboard', [PacienteController::class, 'index'])->name('dashboard');
+
+// CRUD pacientes
+Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
+Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update');
+Route::delete('/pacientes/{paciente}', [PacienteController::class, 'destroy'])->name('pacientes.destroy');

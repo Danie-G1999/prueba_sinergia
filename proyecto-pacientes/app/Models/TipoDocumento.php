@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class TipoDocumento extends Model
 {
+    protected $table = 'tipo_documentos';
+    
     protected $fillable = ['nombre'];
 
     public function pacientes()

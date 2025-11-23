@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\MunicipioController;
 
 // Rutas públicas
 Route::post('login', [AuthController::class, 'login']);
@@ -20,3 +21,6 @@ Route::middleware('auth:api')->group(function () {
     Route::put('pacientes/{id}', [PacienteController::class, 'update']);
     Route::delete('pacientes/{id}', [PacienteController::class, 'destroy']);
 });
+
+
+Route::get('/municipios/{departamento}', [MunicipioController::class, 'getByDepartamento']);
