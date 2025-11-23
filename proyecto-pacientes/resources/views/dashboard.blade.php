@@ -52,7 +52,7 @@
                         <button class="btn btn-sm btn-warning me-2" onclick="editPaciente({{ $p->id }})">
                             <i class="fa-solid fa-pen"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="deletePaciente({{ $p->id }})">
+                        <button class="btn btn-sm btn-danger" onclick="deletePaciente({{ $p->id }}, '{{ $p->nombre1 }} {{ $p->apellido1 }}')">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </td>
@@ -72,6 +72,59 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem("token");
         window.location.href = "/login";
     };
+
+    // --- Eliminar paciente ---
+    const confirmDeleteModal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
+    let pacienteToDeleteId = null;
+
+    window.deletePaciente = (id, nombre) => {
+        pacienteToDeleteId = id;
+        document.getElementById("confirmDeleteModal").querySelector(".modal-body").innerText =
+            `¿Estás seguro de que deseas eliminar al paciente "${nombre}"?`;
+        confirmDeleteModal.show();
+    };
+
+    document.getElementById("deleteConfirmBtn").onclick = async () => {
+        if (!pacienteToDeleteId) return;
+        try {
+            const res = await fetch(`/api/pacientes/${pacienteToDeleteId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                }
+            });
+            if (!res.ok) throw new Error("Error eliminando paciente");
+
+            const row = document.querySelector(`#patientsTable tbody tr[data-id='${pacienteToDeleteId}']`);
+            if (row) row.remove();
+
+            pacienteToDeleteId = null;
+            confirmDeleteModal.hide();
+        } catch (err) {
+            console.error(err);
+            alert("Error eliminando paciente");
+        }
+    };
 });
 </script>
+
+<!-- Modal de confirmación para eliminar -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de que deseas eliminar este paciente?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="deleteConfirmBtn" class="btn btn-danger">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
