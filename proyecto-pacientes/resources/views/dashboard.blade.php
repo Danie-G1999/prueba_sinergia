@@ -20,8 +20,11 @@
 
 <div class="container mt-5">
     <div class="card shadow p-4">
-        <h2 class="text-center mb-4">Gestión de Pacientes</h2>
-        <div class="d-flex justify-content-end mb-3">
+
+        {{-- TÍTULO + BOTÓN ALINEADOS --}}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="m-0">Gestión de Pacientes</h2>
+
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pacienteModal">
                 <i class="fa-solid fa-plus"></i> Nuevo Paciente
             </button>
@@ -60,6 +63,12 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{-- PAGINACIÓN --}}
+        <div class="mt-3">
+            {{ $pacientes->links('pagination::bootstrap-5') }}
+        </div>
+
     </div>
 </div>
 
@@ -94,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     "Accept": "application/json"
                 }
             });
+
             if (!res.ok) throw new Error("Error eliminando paciente");
 
             const row = document.querySelector(`#patientsTable tbody tr[data-id='${pacienteToDeleteId}']`);

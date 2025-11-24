@@ -12,7 +12,7 @@ class PacienteController extends Controller
 {
     public function index()
     {
-        $pacientes = Paciente::with(['genero', 'municipio'])->get();
+        $pacientes = Paciente::with(['genero', 'municipio'])->paginate(10);
         $generos = Genero::all();
         $departamentos = Departamento::all();
         $tipos_documento = TipoDocumento::all();
