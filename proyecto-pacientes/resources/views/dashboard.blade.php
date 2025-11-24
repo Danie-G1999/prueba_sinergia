@@ -21,14 +21,28 @@
 <div class="container mt-5">
     <div class="card shadow p-4">
 
-        {{-- TÍTULO + BOTÓN ALINEADOS --}}
+        {{-- Titulo y botones --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="m-0">Gestión de Pacientes</h2>
 
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pacienteModal">
-                <i class="fa-solid fa-plus"></i> Nuevo Paciente
-            </button>
+            <div class="d-flex gap-2">
+                
+                {{-- BUSCADOR --}}
+                <div class="d-flex justify-content-end">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="form-control" 
+                        placeholder="Buscar..." 
+                        style="width: 220px;">
+                </div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#pacienteModal">
+                    <i class="fa-solid fa-plus"></i> Nuevo Paciente
+                </button>
+            </div>
         </div>
+
+        
 
         <table class="table table-striped table-hover align-middle" id="patientsTable">
             <thead class="table-primary">
@@ -77,12 +91,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("token");
     if (!token) { window.location.href = "/login"; return; }
 
+    // Logout
     document.getElementById("logoutBtn").onclick = () => {
         localStorage.removeItem("token");
         window.location.href = "/login";
     };
 
-    // --- Eliminar paciente ---
+    // ======================================================
+    // Filtro de búsqueda
+    // ======================================================
+    const searchInput = document.getElementById("searchInput");
+    const tableRows = document.querySelectorAll("#patientsTable tbody tr");
+
+    searchInput.addEventListener("keyup", () => {
+        let filter = searchInput.value.toLowerCase();
+
+        tableRows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+        });
+    });
+
+    // ======================================================
+    // Eliminar Paciente
+    // ======================================================
     const confirmDeleteModal = new bootstrap.Modal(document.getElementById("confirmDeleteModal"));
     let pacienteToDeleteId = null;
 
@@ -95,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("deleteConfirmBtn").onclick = async () => {
         if (!pacienteToDeleteId) return;
+
         try {
             const res = await fetch(`/api/pacientes/${pacienteToDeleteId}`, {
                 method: "DELETE",
@@ -111,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             pacienteToDeleteId = null;
             confirmDeleteModal.hide();
+
         } catch (err) {
             console.error(err);
             alert("Error eliminando paciente");
@@ -137,4 +171,5 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
 </div>
+
 @endsection
